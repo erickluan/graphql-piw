@@ -1,0 +1,13 @@
+type User {
+  uid: ID! @unique
+  createdAt: DateTime!
+  name: String!
+  email: String!
+}
+
+type Posts {
+  pid: ID!
+  user: User!
+  title: String!
+  body: String!
+}
