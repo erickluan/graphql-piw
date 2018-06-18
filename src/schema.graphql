@@ -1,8 +1,26 @@
 type Query {
   users: [User!]!
-  posts: [Posts!]!
+  posts: [Post!]!
 }
 
 type Mutation {
-  createUser(name: String!, email: String!): User
+  createUser(name: String!, email: String!): User {
+
+  }
+  createPost(user: User!, title: String!, body: String!): Post {
+
+  }
+}
+
+type User {
+  uid: ID!
+  name: String!
+  email: String!
+}
+
+type Post {
+  pid: ID!
+  user: User!
+  title: String!
+  body: String!
 }

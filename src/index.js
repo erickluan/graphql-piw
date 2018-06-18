@@ -3,17 +3,17 @@ const { GraphQLServer } = require('graphql-yoga');
 // 1
 let users = [
   {
-    uid: 1,
+    uid: 0,
     name: 'Erick Luan',
     email: 'erick.luan@email.com',
   },
   {
-    uid: 2,
+    uid: 1,
     name: 'João Paulo',
     email: 'joao.paulo@email.com',
   },
   {
-    uid: 3,
+    uid: 2,
     name: 'Lucas Mauricio',
     email: 'lucas.mauricio@email.com',
   },
@@ -31,20 +31,57 @@ let posts = [
   },
 ];
 const typeDefs = `
+type Query {
+  users: [User!]!
+  posts: [Post!]!
+}
+
+type Mutation {
+  user(name: String!, email: String!): User,
+  post(title: String!, body: String!): Post
+}
+
+type User {
+  uid: ID! @unique
+  name: String!
+  email: String!
+}
+
+type Post {
+  pid: ID!
+  user: User!
+  title: String!
+  body: String!
+}
 
 `;
+let uidCount = users.length;
+let pidCount = posts.length;
 
-// 2
 const resolvers = {
   Query: {
     users: () => users,
     posts: () => posts,
   },
   Mutation: {
-    createUser: (parent, args) => {
-      const newUser = Object.assign({ uid: users.length + 1 }, args);
+    user: (root, args) => {
+      const newUser = {
+        uid: uidCount++,
+        name: args.name,
+        email: args.email,
+      };
       users.push(newUser);
       return newUser;
+    },
+    post: (root, args) => {
+      const newPost = {
+        pid: pidCount,
+        user: args.user,
+        title: args.title,
+        body: args.body
+      };
+      posts.push(newPost);
+      return newPost;
     },
   },
   User: {
@@ -52,7 +89,7 @@ const resolvers = {
     name: root => root.name,
     email: root => root.email,
   },
-  Posts: {
+  Post: {
     pid: root => root.pid,
     user: root => root.user,
     title: root => root.title,
@@ -66,3 +103,5 @@ const server = new GraphQLServer({
   resolvers,
 });
 server.start(() => console.log(`Server is running on http://localhost:4000`));
+
+//'./src/schema.graphql'
